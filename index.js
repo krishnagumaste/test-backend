@@ -204,23 +204,7 @@ app.post('/userpageinfo', authMiddleware, async (req, res) => {
             return lastBid.username === username;
         });
 
-        res.json({
-            user,
-            products: validProducts
-        });
-    } catch (err) {
-        res.status(500).json({ message: 'Server error', error: err });
-    }
-});
-
-
-
-app.post('/currentbids', authMiddleware, async (req, res) => {
-    const { username } = req.user; // Extract username from the token
-
-    try {
-        // Find products where the first bid in bidHistory matches the username
-        const products = await Product.find({
+        const currentProducts = await Product.find({
             'bidHistory.0.username': username // Check if the first object in bidHistory has the username
         });
 
@@ -229,12 +213,38 @@ app.post('/currentbids', authMiddleware, async (req, res) => {
             return res.status(404).json({ message: 'No products found with your first bid' });
         }
 
-        // Send the products in response
-        res.json(products);
+        res.json({
+            user,
+            products: validProducts,
+            currentProducts: currentProducts
+        });
     } catch (err) {
         res.status(500).json({ message: 'Server error', error: err });
     }
 });
+
+
+
+// app.post('/currentbids', authMiddleware, async (req, res) => {
+//     const { username } = req.user; // Extract username from the token
+
+//     try {
+//         // Find products where the first bid in bidHistory matches the username
+//         const products = await Product.find({
+//             'bidHistory.0.username': username // Check if the first object in bidHistory has the username
+//         });
+
+//         // If no products are found, return a message indicating so
+//         if (products.length === 0) {
+//             return res.status(404).json({ message: 'No products found with your first bid' });
+//         }
+
+//         // Send the products in response
+//         res.json(products);
+//     } catch (err) {
+//         res.status(500).json({ message: 'Server error', error: err });
+//     }
+// });
 
 
 
