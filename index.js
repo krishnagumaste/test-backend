@@ -395,6 +395,38 @@ app.post('/cancelbid', authMiddleware, async (req, res) => {
 
 
 
+// Edit Product Route
+app.post('/edit', authMiddleware, async (req, res) => {
+    const { _id, name, endDate, imageSrc, details } = req.body;
+
+    try {
+        // Find the product by _id
+        const product = await Product.findById(_id);
+
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+
+        // Update the fields if they are provided
+        if (name) product.name = name;
+        if (endDate) product.endDate = endDate;
+        if (imageSrc) product.imageSrc = imageSrc;
+        if (details) product.details = details;
+
+        // Save the updated product to the database
+        await product.save();
+
+        // Send the updated product details in response
+        res.json({ message: 'Product updated successfully', product });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err });
+    }
+});
+
+
+
+
+
 
 
 
